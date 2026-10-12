@@ -1,4 +1,4 @@
-# Playground Prompt 00 — Hotel Social-Simulation Capability Spike
+﻿# Playground Prompt 00 â€” Hotel Social-Simulation Capability Spike
 
 ## Purpose
 
@@ -20,7 +20,7 @@ Use a simple **graphic-noir cel-shaded** direction: low-complexity stylized geom
 
 The playable character is the **Night Clerk**.
 
-Support desktop movement with WASD or arrow keys and a clear interact control. If practical without making the implementation unstable, provide simple touch movement/interact controls when played on a touch device. Do not let mobile controls cover important HUD information.
+Support desktop movement with WASD or arrow keys and a clear interact control. For this capability spike, prioritize reliable desktop controls and simulation behavior; do not spend generation complexity on touch/mobile controls yet.
 
 ### Small hotel layout
 
@@ -42,7 +42,7 @@ NPC composition:
 - 1 maintenance worker;
 - 1 security employee.
 
-Each NPC should have a simple repeating routine using plausible locations, such as lobby → corridor → room, staff room → corridor → lobby, or security office → patrol → office.
+Each NPC should have a simple repeating routine using plausible locations, such as lobby â†’ corridor â†’ room, staff room â†’ corridor â†’ lobby, or security office â†’ patrol â†’ office.
 
 Their routines should not all be identical. NPCs should continue their routines when the player is not interacting with them.
 
@@ -86,15 +86,15 @@ For this prototype, use these approximate rules:
 - normal role-appropriate behavior: +0;
 - player enters a mildly inappropriate area while witnessed: +8 Suspicion for the NPC who witnessed it;
 - player attempts/enters a clearly restricted area while witnessed: +18 for the witness;
-- a successful contextual explanation/favor can lower that NPC's Suspicion by about 5–15.
+- a successful contextual explanation/favor can lower that NPC's Suspicion by about 5â€“15.
 
 Do **not** make Suspicion one shared global number. Different NPCs must be able to have very different opinions of the player at the same time.
 
 NPC behavior should visibly change at rough thresholds:
-- 0–24: unconcerned;
-- 25–49: attentive;
-- 50–74: suspicious / may question the player;
-- 75–99: strongly suspicious / may refuse cooperation or report behavior;
+- 0â€“24: unconcerned;
+- 25â€“49: attentive;
+- 50â€“74: suspicious / may question the player;
+- 75â€“99: strongly suspicious / may refuse cooperation or report behavior;
 - 100: takes a strong contextual action such as alerting security.
 
 ### Global Exposure
@@ -114,7 +114,7 @@ At 100 Exposure, trigger a serious hotel consequence such as security confrontin
 
 ### Timed event
 
-The prototype should run for about **5–8 minutes**.
+The prototype should run for about **5â€“8 minutes**.
 
 At approximately 2 minutes, trigger one visible hotel anomaly: one guest requests a replacement key, then shortly afterward another NPC enters the corridor or staff area at an unusual time.
 
