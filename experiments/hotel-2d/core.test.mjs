@@ -61,7 +61,7 @@ test("duty economy supports two gains and two distinct contextual spends", () =>
   assert.equal(afterCamera.leverage, 0);
   assert.equal(afterCamera.evidence.length, 2);
   assert.ok(afterLedger.evidence[0].description.includes("West"));
-  assert.ok(afterCamera.evidence[1].description.includes("scarf"));
+  assert.ok(afterCamera.evidence[1].description.includes("lanyard"));
   assert.equal(r.leverage, 3, "previous immutable snapshot remains intact");
 });
 
