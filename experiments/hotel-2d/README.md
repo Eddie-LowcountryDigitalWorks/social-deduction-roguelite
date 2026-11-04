@@ -10,7 +10,7 @@ Run a local static server from the repository root:
 
     python -m http.server 8000
 
-Open [http://127.0.0.1:8000/experiments/hotel-2d/](http://127.0.0.1:8000/experiments/hotel-2d/). No signup, external API, telemetry, backend, data persistence, third-party script, or install step is required. A browser is needed because this prototype uses native JavaScript modules, which are not guaranteed to load through a direct \`file://\` URL.
+Open [http://127.0.0.1:8000/experiments/hotel-2d/](http://127.0.0.1:8000/experiments/hotel-2d/). No signup, external API, telemetry, backend, data persistence, third-party script, or install step is required. A browser is needed because this prototype uses native JavaScript modules, which are not guaranteed to load through a direct `file://` URL.
 
 The only human-controlled role is the Night Clerk. Eight independently scheduled NPCs move between four schematic hotel zones. Actions advance simulated minutes; a keycard incident occurs at 02:00 and dawn handoff occurs at 12:00, unless the player resolves the case sooner.
 
@@ -31,8 +31,16 @@ Requires an existing Node.js installation; no packages are installed:
 
 Tests cover NPC identity/schedules, repeatable generation, invalid-action no-ops, incident timing, contextual Leverage, NPC-local Suspicion versus global Exposure, unrelated innocence, hidden-state projection, accusation outcomes, exposure consequence, and clean restart. GitHub Actions runs this same dependency-free suite on relevant PR/push changes.
 
+## Real Chromium interaction smoke
+
+Requires Node.js 22+ with built-in WebSocket and an existing Chrome/Chromium binary. This smoke launches a localhost-only static server plus headless browser, uses Chrome DevTools Protocol without npm packages, and cleans up the ephemeral browser profile. It covers UI initialization, NPCs, incident timing, clues, accusation, terminal state, restart and a 390px mobile viewport:
+
+    node experiments/hotel-2d/browser-smoke.mjs
+
+If Chrome is installed under another executable name, supply `CHROME_BIN=/path/to/chromium` in the environment. GitHub Actions runs both the deterministic Node suite and the real Chromium interaction smoke on PR/push changes. This is automated UI functionality evidence, not a human playtest, animation proof, or UX acceptance.
+
 ## Deliberate limitations
 
 This is a **room-card/top-down schematic**, not physical 2D movement, collision, animated NPC navigation, multiplayer, AI conversation, final art, full truth-first procedural mystery, asset/edge progression, or release candidate. The incident and clue variants are only enough to test control and state integrity. The experiment is **not** evidence that people enjoy the game, that the mystery is replayable enough, or that Playground's single-player defect is repaired.
 
-Compare any actual browser playtest against \`docs/production/PLAYTEST_CRITERIA.md\` and issue #3; do not promote #2 MVCR from synthetic/unit tests alone. Issue #4 owns this bounded experiment. Incremental spend: $0.
+Compare any actual browser playtest against `docs/production/PLAYTEST_CRITERIA.md` and issue #3; do not promote #2 MVCR from synthetic/unit tests alone. Issue #4 owns this bounded experiment. Incremental spend: $0.
