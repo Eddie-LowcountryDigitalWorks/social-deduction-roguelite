@@ -87,6 +87,18 @@ test("an unrelated secret exists on a different guest, not a universal guilt tel
   }
 });
 
+test("ordinary questioning does not identify culprit through unique answer wording", () => {
+  for (let seed = 0; seed < 16; seed++) {
+    const start = incident(seed);
+    const culprit = NPCS.find((person) => person.id === start.truth.culpritId);
+    const neutral = NPCS.find((person) => person.role === "Guest"
+      && person.id !== start.truth.culpritId && person.id !== start.truth.unrelatedSecretId);
+    const culpritAnswer = step(start, "question", culprit.id).evidence.at(-1).description.replace(culprit.name, "[guest]");
+    const neutralAnswer = step(start, "question", neutral.id).evidence.at(-1).description.replace(neutral.name, "[guest]");
+    assert.equal(culpritAnswer, neutralAnswer);
+  }
+});
+
 test("normal and debug projections never include internal seed or hidden-truth keys", () => {
   let r = createRun(2);
   for (let action of ["desk", "delivery", "ledger", "camera", "question"]) {
