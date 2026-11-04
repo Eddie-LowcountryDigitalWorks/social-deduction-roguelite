@@ -26,3 +26,9 @@ jobs:
         run: node --check experiments/hotel-2d/core.mjs
       - name: Run deterministic regression suite
         run: node --test experiments/hotel-2d/core.test.mjs
+      - name: Validate browser-smoke syntax
+        run: node --check experiments/hotel-2d/browser-smoke.mjs
+      - name: Verify Chromium availability
+        run: command -v google-chrome
+      - name: Run real Chromium interaction smoke
+        run: node experiments/hotel-2d/browser-smoke.mjs
