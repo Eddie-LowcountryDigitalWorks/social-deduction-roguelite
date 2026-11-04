@@ -74,7 +74,7 @@ async function main() {
   await close(probe);
   profile = await mkdtemp(join(tmpdir(), "hotel-2d-"));
   browser = spawn(process.env.CHROME_BIN || "google-chrome", [
-    "--headless=new", "--disable-gpu", "--no-sandbox", "--no-first-run",
+    "--headless=new", "--disable-gpu", "--no-first-run",
     "--no-default-browser-check", "--disable-background-networking",
     "--no-proxy-server", "--user-data-dir=" + profile,
     "--remote-debugging-port=" + debugPort, "about:blank"
