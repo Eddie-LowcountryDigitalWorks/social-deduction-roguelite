@@ -123,10 +123,10 @@ export function perform(run, action, target = null) {
   } else if (action === "question") {
     state.used.push("question:" + target);
     state.suspicion[target] = clamp(state.suspicion[target] + 4);
-    if (target === state.truth.culpritId) {
-      evidence(state, "alibi:" + target, validPerson.name + " says they were in the lobby at 02:00; the allegation can be checked against the other clues.");
-    } else if (target === state.truth.unrelatedSecretId) {
+    if (validPerson.role === "Guest" && target === state.truth.unrelatedSecretId) {
       evidence(state, "secret:" + target, validPerson.name + " evasively mentions hiding a personal surprise; this is not evidence of keycard guilt.");
+    } else if (validPerson.role === "Guest") {
+      evidence(state, "statement:" + target, validPerson.name + " says their evening was ordinary and denies knowing where the spare card went.");
     } else if (target === "cam") {
       evidence(state, "witness", "Cam heard the service door open around 02:00 but saw no face.");
     } else {
