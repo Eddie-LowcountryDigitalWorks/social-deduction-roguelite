@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Night Clerk — 2D Hotel State Proof</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, sans-serif; background: #101a24; color: #f3f5f6; }
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    main { width: min(1180px, 96%); margin: 1.5rem auto 3rem; }
+    h1 { margin: .3rem 0; } h2 { font-size: 1.15rem; margin: 0 0 .65rem; }
+    p { line-height: 1.5; } .muted { color: #ccd2d8; }
+    .layout { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(270px, 1fr); gap: 1rem; }
+    .panel { background: #1b2a37; border: 1px solid #405469; border-radius: 12px; padding: 1rem; margin-bottom: 1rem; }
+    .stats { display: flex; flex-wrap: wrap; gap: .7rem; margin: 1rem 0; }
+    .stat { border-radius: 8px; background: #293e50; padding: .65rem 1rem; min-width: 115px; }
+    .stat strong { display: block; font-size: 1.4rem; }
+    .map { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .7rem; }
+    .zone { border: 2px solid #4f6d7f; border-radius: 9px; min-height: 150px; padding: .7rem; background: #243645; }
+    .zone h3 { margin: 0 0 .6rem; font-size: 1rem; }
+    .person { display: block; padding: .38rem .5rem; margin: .35rem 0; border-left: 5px solid var(--npc-color); background: #111e29; font-size: .87rem; border-radius: 3px; }
+    button, select { font: inherit; border-radius: 7px; border: 1px solid #9eb7c3; }
+    button { background: #236e7b; color: #fff; padding: .55rem .8rem; cursor: pointer; margin: .2rem; font-weight: 600; }
+    button:hover:not(:disabled) { background: #318fa1; }
+    button:focus-visible, select:focus-visible { outline: 3px solid #ffd56c; outline-offset: 2px; }
+    button:disabled { opacity: .45; cursor: not-allowed; }
+    button.warn { background: #945b36; } button.danger { background: #9b4747; }
+    select { width: 100%; padding: .55rem; background: #162532; color: #fff; }
+    .button-grid { display: flex; flex-wrap: wrap; gap: .25rem; margin: .4rem 0 1rem; }
+    .status { padding: .65rem; min-height: 2.4rem; border-radius: 5px; background: #223e45; }
+    ol, ul { padding-left: 1.3rem; } li { margin-bottom: .5rem; line-height: 1.4; }
+    #outcome { border-color: #e1bb73; } #outcome[hidden], #debug[hidden] { display: none; }
+    .subtle { font-size: .87rem; color: #c3d3d8; }
+    .screen-reader-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    @media (max-width: 800px) { .layout { grid-template-columns: 1fr; } }
+    @media (max-width: 450px) { .map { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="subtle">NATIVE-2D-001 · Standalone browser experiment · one human player · no network or saved data</p>
+    <h1>Night Clerk</h1>
+    <p class="muted">A schematic 2D Hotel experiment: watch routines, work your shift, and investigate a missing keycard. Each choice advances the clock. A suspicious guest is not necessarily guilty.</p>
+  </header>
+  <section aria-label="Shift indicators" class="stats">
+    <div class="stat">Time<strong id="clock">00:00</strong></div>
+    <div class="stat">Leverage<strong id="leverage">1</strong></div>
+    <div class="stat">Global Exposure<strong id="exposure">0 / 100</strong></div>
+    <div class="stat">Duties<strong id="duties">0 / 2</strong></div>
+  </section>
+  <div class="layout">
+    <div>
+      <section class="panel" aria-labelledby="map-title">
+        <h2 id="map-title">Hotel floor · room-card view</h2>
+        <p class="subtle">Four zones. Colored chips represent eight independent NPC schedules; a guest's room wing and accessory are public facts, not accusations.</p>
+        <div class="map" id="map"></div>
+      </section>
+      <section class="panel" aria-labelledby="evidence-title">
+        <h2 id="evidence-title">Case file</h2>
+        <p id="incident" class="muted">There is no reported incident yet. Complete duties or observe.</p>
+        <ol id="evidence"></ol>
+      </section>
+      <section class="panel" aria-labelledby="log-title">
+        <h2 id="log-title">Shift log</h2>
+        <ol id="log"></ol>
+      </section>
+    </div>
+    <div>
+      <section class="panel" aria-labelledby="actions-title">
+        <h2 id="actions-title">Role actions</h2>
+        <div class="button-grid">
+          <button data-action="desk">Check in guest (+1 Leverage)</button>
+          <button data-action="delivery">Deliver towels (+1 Leverage)</button>
+          <button data-action="wait">Observe / wait 1 min</button>
+          <button data-action="sneak" class="warn">Risk restricted shortcut</button>
+        </div>
+        <h2>Incident investigation</h2>
+        <label for="person">Person to question or accuse</label>
+        <select id="person"></select>
+        <div class="button-grid">
+          <button data-action="question">Question selected NPC</button>
+          <button data-action="ledger">Sign-out ledger (−1 Leverage)</button>
+          <button data-action="camera">Camera footage (−2 Leverage)</button>
+          <button data-action="service" class="warn">Search restricted service room</button>
+        </div>
+        <div class="button-grid">
+          <button data-action="accuse" class="danger">Resolve now: accuse selected NPC</button>
+          <button data-action="pass">Resolve without accusation</button>
+        </div>
+        <p id="message" class="status" role="status" aria-live="polite">Start with ordinary Night Clerk duties. The incident begins at minute 2.</p>
+      </section>
+      <section id="outcome" class="panel" hidden aria-labelledby="result-title">
+        <h2 id="result-title">Shift handoff · case outcome</h2>
+        <div id="result"></div>
+      </section>
+      <section class="panel">
+        <h2>Experiment controls</h2>
+        <div class="button-grid">
+          <button id="restart">Restart same scenario</button>
+          <button id="next">Try a different scenario</button>
+        </div>
+        <label><input id="show-debug" type="checkbox"> Show NPC routine / suspicion debug</label>
+        <div id="debug" hidden></div>
+      </section>
+    </div>
+  </div>
+  <footer class="subtle">This verifies deterministic interaction rules only. No human fun/readability playtest or Playground platform acceptance is implied. See <code>README.md</code>.</footer>
+</main>
+<script type="module">
+  import { NPCS, ZONES, createRun, perform, publicView } from "./core.mjs";
+  const $ = (id) => document.getElementById(id);
+  let seed = 1;
+  let run = createRun(seed);
+  const selector = $("person");
+  for (const npc of NPCS) {
+    const option = document.createElement("option");
+    option.value = npc.id;
+    option.textContent = npc.name + " · " + npc.role;
+    selector.append(option);
+  }
+  const el = (tag, text = "") => {
+    const node = document.createElement(tag);
+    node.textContent = text;
+    return node;
+  };
+  function render() {
+    const view = publicView(run);
+    $("clock").textContent = String(view.minute).padStart(2, "0") + ":00";
+    $("leverage").textContent = String(view.leverage);
+    $("exposure").textContent = String(view.exposure) + " / 100";
+    $("duties").textContent = String(view.duties.length) + " / 2";
+    $("incident").textContent = view.incident
+      ? "A spare hotel keycard is missing. Ask questions or earn cooperation; ledger and camera clues narrow different dimensions. Resolve now or spend more time and risk."
+      : "The keycard has not vanished yet. Establish your routine before the 02:00 incident.";
+    $("map").replaceChildren();
+    for (const zone of ZONES) {
+      const group = el("section");
+      group.className = "zone";
+      group.append(el("h3", zone));
+      for (const npc of view.people.filter((person) => person.location === zone)) {
+        const chip = el("span", npc.name + " · " + npc.role +
+          (npc.room ? " · " + npc.wing + " · " + npc.accessory : ""));
+        chip.className = "person";
+        chip.style.setProperty("--npc-color", npc.color);
+        group.append(chip);
+      }
+      $("map").append(group);
+    }
+    $("evidence").replaceChildren(...(view.evidence.length
+      ? view.evidence.map((item) => el("li", item.description))
+      : [el("li", "No evidence collected.")]));
+    $("log").replaceChildren(...view.feed.slice(-8).map((item) => el("li", item)));
+    for (const button of document.querySelectorAll("button[data-action]")) {
+      const action = button.dataset.action;
+      button.disabled = view.ended || (["question", "ledger", "camera", "service", "accuse", "pass"].includes(action) && !view.incident);
+    }
+    $("outcome").hidden = !view.ended;
+    if (view.ended) {
+      const o = view.outcome;
+      $("result").replaceChildren(
+        el("p", "Verdict: " + o.verdict),
+        el("p", "Accused: " + (o.accused || "Nobody")),
+        el("p", "Keycard culprit: " + o.culprit),
+        el("p", "Unrelated secret: " + o.unrelatedSecret),
+        el("p", "Duties: " + o.duties + "/2 · Clues: " + o.evidence + " · Exposure: " + o.exposure + " · Remaining Leverage: " + o.leverage),
+        el("p", o.explanation)
+      );
+    }
+    const debug = $("debug");
+    debug.hidden = !$("show-debug").checked;
+    if (!debug.hidden) {
+      debug.replaceChildren(el("p", "Read-only projection: no hidden culprit, unrelated-secret ID or internal seed."));
+      for (const npc of view.people) {
+        debug.append(el("p", npc.name + " — " + npc.location + ", local Suspicion " + npc.suspicion + "/100"));
+      }
+    }
+  }
+  document.querySelectorAll("button[data-action]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const response = perform(run, button.dataset.action, selector.value);
+      if (response.ok) run = response.state;
+      $("message").textContent = response.message;
+      render();
+    });
+  });
+  $("show-debug").addEventListener("change", render);
+  $("restart").addEventListener("click", () => { run = createRun(seed); $("message").textContent = "Restarted; all state reset."; render(); });
+  $("next").addEventListener("click", () => { seed += 1; run = createRun(seed); $("message").textContent = "Started a new seeded scenario."; render(); });
+  render();
+</script>
+</body>
+</html>

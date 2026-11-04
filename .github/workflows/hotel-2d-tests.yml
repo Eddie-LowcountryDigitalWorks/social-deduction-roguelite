@@ -1,0 +1,34 @@
+name: Native 2D Hotel state tests
+
+on:
+  pull_request:
+    paths:
+      - "experiments/hotel-2d/**"
+      - ".github/workflows/hotel-2d-tests.yml"
+  push:
+    branches: [main]
+    paths:
+      - "experiments/hotel-2d/**"
+      - ".github/workflows/hotel-2d-tests.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  state-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout reviewed source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1 immutable pin
+      - name: Validate module syntax
+        run: node --check experiments/hotel-2d/core.mjs
+      - name: Run deterministic regression suite
+        run: node --test experiments/hotel-2d/core.test.mjs
+      - name: Validate browser-smoke syntax
+        run: node --check experiments/hotel-2d/browser-smoke.mjs
+      - name: Verify Chromium availability
+        run: command -v google-chrome
+      - name: Run real Chromium interaction smoke
+        run: node experiments/hotel-2d/browser-smoke.mjs
