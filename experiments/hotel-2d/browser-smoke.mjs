@@ -106,7 +106,9 @@ async function main() {
   assert.equal(await js('document.querySelector("[data-action=ledger]").disabled'), true);
 
   await js('document.querySelector("[data-action=desk]").click()');
+  assert.equal(await js('document.querySelector("[data-action=desk]").disabled'), true);
   await js('document.querySelector("[data-action=delivery]").click()');
+  assert.equal(await js('document.querySelector("[data-action=delivery]").disabled'), true);
   assert.equal(await js('document.querySelector("#clock").textContent'), "02:00");
   assert.equal(await js('document.querySelector("#leverage").textContent'), "3");
   assert.equal(await js('document.querySelector("[data-action=ledger]").disabled'), false);
@@ -119,7 +121,14 @@ async function main() {
   assert.match(await js('document.querySelector("#evidence").textContent'), /lanyard/);
   assert.equal(await js('document.querySelector("#leverage").textContent'), "0");
   assert.equal(await js('document.querySelector("#clock").textContent'), "04:00");
+  assert.equal(await js('document.querySelector("[data-action=ledger]").disabled'), true);
+  assert.equal(await js('document.querySelector("[data-action=camera]").disabled'), true);
 
+  await js('document.querySelector("#person").value = "arthur"; document.querySelector("#person").dispatchEvent(new Event("change"))');
+  await js('document.querySelector("[data-action=question]").click()');
+  assert.equal(await js('document.querySelector("[data-action=question]").disabled'), true);
+  await js('document.querySelector("#person").value = "elena"; document.querySelector("#person").dispatchEvent(new Event("change"))');
+  assert.equal(await js('document.querySelector("[data-action=question]").disabled'), false);
   await js('document.querySelector("#show-debug").click()');
   const debugText = await js('document.querySelector("#debug").textContent');
   assert.match(debugText, /Iris Vale/);
