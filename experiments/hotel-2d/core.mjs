@@ -154,6 +154,7 @@ export function publicView(run) {
   return {
     minute: run.minute, leverage: run.leverage, exposure: run.exposure,
     incident: run.minute >= 2, ended: run.ended, duties: [...run.duties],
+    used: [...run.used],
     people: NPCS.map((person) => ({ ...person, location: locationAt(person.id, run.minute), suspicion: run.suspicion[person.id] })),
     evidence: run.evidence.map((item) => ({ ...item })),
     feed: [...run.feed], outcome: run.ended ? { ...run.outcome } : null
