@@ -39,7 +39,7 @@ Requires Node.js 22+ with built-in WebSocket and an existing Chrome/Chromium bin
 
     node experiments/hotel-2d/browser-smoke.mjs
 
-If Chrome is installed under another executable name, supply `CHROME_BIN=/path/to/chromium` in the environment. The harness asks Chrome to allocate a loopback-only debugging port and reads the selected port from its isolated temporary profile, rather than reserving and releasing a guessed port. It fails on malformed/out-of-loopback endpoints and cleans up after itself. GitHub Actions runs both the deterministic Node suite and the real Chromium interaction smoke on PR/push changes. This is automated UI functionality evidence, not a human playtest, animation proof, or UX acceptance.
+If Chrome is installed under another executable name, supply `CHROME_BIN=/path/to/chromium` in the environment. The harness reserves an available loopback debugging port, launches Chrome in a fresh isolated temporary profile, and retries only a failed Chrome CDP startup once with a fresh profile and port. It preserves Chrome's sandbox, cleans up the failed profile and process, and never retries or suppresses failed gameplay assertions. The automatic-port/DevToolsActivePort approach was tested but did not expose a CDP endpoint on this hosted runner (two independent failed attempts), so this bounded retry keeps the previously demonstrated fixed-port path. GitHub Actions runs both the deterministic Node suite and the real Chromium interaction smoke on PR/push changes. This is automated UI functionality evidence, not a human playtest, animation proof, or UX acceptance.
 
 ## Human playtest protocol — NOT YET PERFORMED
 
