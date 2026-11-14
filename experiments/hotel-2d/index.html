@@ -154,7 +154,10 @@
     $("log").replaceChildren(...view.feed.slice(-8).map((item) => el("li", item)));
     for (const button of document.querySelectorAll("button[data-action]")) {
       const action = button.dataset.action;
-      button.disabled = view.ended || (["question", "ledger", "camera", "service", "accuse", "pass"].includes(action) && !view.incident);
+      const incidentAction = ["question", "ledger", "camera", "service", "accuse", "pass"].includes(action);
+      const alreadyUsed = view.used.includes(action) || (action === "question" && view.used.includes("question:" + selector.value));
+      const cannotAfford = (action === "ledger" && view.leverage < 1) || (action === "camera" && view.leverage < 2);
+      button.disabled = view.ended || (incidentAction && !view.incident) || alreadyUsed || cannotAfford;
     }
     $("outcome").hidden = !view.ended;
     if (view.ended) {
@@ -185,6 +188,7 @@
       render();
     });
   });
+  selector.addEventListener("change", render);
   $("show-debug").addEventListener("change", render);
   $("restart").addEventListener("click", () => { run = createRun(seed); $("message").textContent = "Restarted; all state reset."; render(); });
   $("next").addEventListener("click", () => { seed += 1; run = createRun(seed); $("message").textContent = "Started a new seeded scenario."; render(); });
