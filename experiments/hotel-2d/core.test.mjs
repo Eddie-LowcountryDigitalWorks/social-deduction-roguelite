@@ -123,6 +123,24 @@ test("correct accusation, false accusation, and abstention are differentiated", 
   assert.strictEqual(perform(correct, "wait").state, correct, "closed state rejects new actions");
 });
 
+test("repeatable risky shortcuts can fund clues after safe duties are exhausted or skipped", () => {
+  const initial = incident(1);
+  let run = step(initial, "sneak");
+  assert.equal(run.leverage, 2);
+  assert.equal(run.exposure, 25);
+  assert.equal(run.suspicion.iris, 18);
+  assert.equal(initial.leverage, 1, "source state stays immutable");
+  run = step(run, "sneak");
+  assert.equal(run.leverage, 3);
+  assert.equal(run.exposure, 50);
+  run = step(run, "ledger");
+  run = step(run, "camera");
+  assert.equal(run.leverage, 0);
+  assert.equal(run.evidence.length, 2);
+  assert.equal(run.duties.length, 0, "risky clue path does not falsely award safe duties");
+  assert.equal(run.ended, false);
+});
+
 test("risk can reach exposed consequence before dawn", () => {
   let r = createRun(1);
   for (let i = 0; i < 4; i++) r = step(r, "sneak");

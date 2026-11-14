@@ -145,6 +145,20 @@ async function main() {
   assert.equal(await js('document.querySelector("#outcome").hidden'), true);
   assert.match(await js('document.querySelector("#evidence").textContent'), /No evidence/);
 
+  // Risk/reward is visible in the browser without performing the safe duties.
+  await js('document.querySelector("[data-action=sneak]").click()');
+  assert.equal(await js('document.querySelector("#leverage").textContent'), "2");
+  assert.equal(await js('document.querySelector("#exposure").textContent'), "25 / 100");
+  assert.match(await js('document.querySelector("#message").textContent'), /earned \+1 Leverage/);
+  await js('document.querySelector("[data-action=sneak]").click()');
+  assert.equal(await js('document.querySelector("#leverage").textContent'), "3");
+  assert.equal(await js('document.querySelector("#clock").textContent'), "02:00");
+  await js('document.querySelector("[data-action=ledger]").click()');
+  await js('document.querySelector("[data-action=camera]").click()');
+  assert.equal(await js('document.querySelector("#leverage").textContent'), "0");
+  assert.equal(await js('document.querySelectorAll("#evidence li").length'), 2);
+  await js('document.querySelector("#restart").click()');
+
   await call("Emulation.setDeviceMetricsOverride", {
     width: 390, height: 800, deviceScaleFactor: 1, mobile: true
   });

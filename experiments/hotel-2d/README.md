@@ -21,6 +21,8 @@ The only human-controlled role is the Night Clerk. Eight independently scheduled
 5. Choose to accuse someone, leave the case unresolved, or spend more time collecting information.
 6. At handoff, compare the verdict, original truth, duties, clues, Exposure, and collateral consequences. Restart the same scenario or advance to a different deterministic seed.
 
+The repeatable **Risk shortcut** earns **+1 Leverage** in exchange for **+25 Global Exposure** and **+18 Suspicion from Iris** per use. Unlike the two one-time safe duties, this permits a riskier clue-funding route after duties are exhausted or skipped; four uses end the shift through Exposure. That makes the risk action an actual tradeoff instead of a strictly harmful wait substitute.
+
 The **debug checkbox** shows NPC location and individual Suspicion, never internal culprit or unrelated-secret identifiers before the final verdict. Global Exposure is separate. Invalid or premature actions do not mutate the authoritative state.
 
 ## Deterministic tests

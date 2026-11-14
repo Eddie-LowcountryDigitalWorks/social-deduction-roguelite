@@ -134,9 +134,12 @@ export function perform(run, action, target = null) {
     }
     message = "Questioned " + validPerson.name + ". Local Suspicion +4; Global Exposure unchanged.";
   } else if (action === "sneak") {
+    // The repeatable shortcut trades detection risk for another unit of Leverage.
+    // Safe duties remain one-time; repeated shortcuts can end a shift through Exposure.
+    state.leverage += 1;
     state.suspicion.iris = clamp(state.suspicion.iris + 18);
     state.exposure = clamp(state.exposure + 25);
-    message = "You took an obvious unauthorized shortcut. Iris Suspicion +18, Global Exposure +25.";
+    message = "A risky shortcut earned +1 Leverage. Iris Suspicion +18, Global Exposure +25.";
   } else if (action === "wait") {
     message = "You watched the hotel settle into its next routine.";
   } else if (action === "accuse" || action === "pass") {
