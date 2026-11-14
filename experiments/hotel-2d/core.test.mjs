@@ -145,3 +145,21 @@ test("dawn is terminal, and a clean restart has no carried-over state", () => {
   assert.equal(restart.ended, false);
   assert.deepEqual(restart, createRun(8));
 });
+
+test("public used-action affordances track only visible player choices without hidden truth", () => {
+  let run = createRun(1);
+  assert.deepEqual(publicView(run).used, []);
+  run = step(run, "desk");
+  assert.deepEqual(publicView(run).used, ["desk"]);
+  run = step(run, "delivery");
+  run = step(run, "ledger");
+  run = step(run, "question", "arthur");
+  const projection = publicView(run);
+  assert.deepEqual(projection.used, ["desk", "delivery", "ledger", "question:arthur"]);
+  assert.equal(projection.used.includes("camera"), false);
+  assert.equal(JSON.stringify(projection).includes('"truth"'), false);
+  assert.equal(JSON.stringify(projection).includes('"culpritId"'), false);
+  projection.used.push("tamper");
+  assert.equal(run.used.includes("tamper"), false);
+  assert.deepEqual(publicView(createRun(1)).used, [], "restart resets spent controls");
+});
