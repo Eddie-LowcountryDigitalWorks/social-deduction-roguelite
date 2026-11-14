@@ -39,7 +39,15 @@ Requires Node.js 22+ with built-in WebSocket and an existing Chrome/Chromium bin
 
     node experiments/hotel-2d/browser-smoke.mjs
 
-If Chrome is installed under another executable name, supply `CHROME_BIN=/path/to/chromium` in the environment. GitHub Actions runs both the deterministic Node suite and the real Chromium interaction smoke on PR/push changes. This is automated UI functionality evidence, not a human playtest, animation proof, or UX acceptance.
+If Chrome is installed under another executable name, supply `CHROME_BIN=/path/to/chromium` in the environment. The harness asks Chrome to allocate a loopback-only debugging port and reads the selected port from its isolated temporary profile, rather than reserving and releasing a guessed port. It fails on malformed/out-of-loopback endpoints and cleans up after itself. GitHub Actions runs both the deterministic Node suite and the real Chromium interaction smoke on PR/push changes. This is automated UI functionality evidence, not a human playtest, animation proof, or UX acceptance.
+
+## Human playtest protocol — NOT YET PERFORMED
+
+This is the minimum manual acceptance evidence for issue #4, not an automated PASS. Use the browser experiment above on a desktop and a narrow touch-screen viewport. Test two distinct starting cases: the initial case after loading the page, then choose **Try a different scenario** once for the second case. Complete a full verdict or abstention in each case.
+
+Record for each case: device and input method; whether the action buttons, time advancement, NPC positions, local Suspicion and global Exposure are understandable before consulting this README; what evidence led to the verdict; whether the unrelated-secret red herring felt fair; any confusion or unexpected disablement; risk/reward usefulness; narrow-screen clipping or unreachable controls; and whether another run sounds appealing. Do not record names, private household information, accounts, or other sensitive data.
+
+A human reviewer should separately give 1–5 subjective scores for clarity, deduction fairness, pacing and replay interest, plus one concrete improvement. A reproducible malfunction requires steps, observed/expected result, and whether restarting the same case reproduces it. Keep these observations in the existing issue #4/PR #5 rather than inventing a second tracking system. Neither scripted success nor one favorable impression establishes a finished product.
 
 ## Deliberate limitations
 
